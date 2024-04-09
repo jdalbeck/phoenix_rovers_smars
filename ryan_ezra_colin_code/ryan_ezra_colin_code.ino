@@ -7,8 +7,15 @@
 // DC motor on M2
 AF_DCMotor motor(2);
 AF_DCMotor motor2(1);
+
+ // ESP32
+//int trigPin = 5;    // Trigger
+//int echoPin = 13;    // Echo
+
+// Arduino
 int trigPin = 10;    // Trigger
 int echoPin = 9;    // Echo
+
 long duration, cm, inches;
  
 void setup() {
