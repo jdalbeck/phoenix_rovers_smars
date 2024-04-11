@@ -1,18 +1,33 @@
 /*
-  ESP32 (Wemos D1 R32) with L293 Motor Shield Test
+  L293 Motor Shield Test
+  Should work with both Arduino and ESP32
+  Requires MotorShield library copied to Arduino IDE Libraries folder
 */
-#include "MotorShieldESP32.h"
-espMotor motor1(1);
-espMotor motor2(2);
+#include <MotorShield.h>
+Motor leftMotor(1);
+Motor rightMotor(2);
 
 void setup() {
-
+  Serial.begin(9600);
   // turn on motor
-  motor1.setSpeed(200);
-  motor2.setSpeed(200);
-  motor1.run(FORWARD);
-  motor2.run(FORWARD);
+  leftMotor.setSpeed(100);
+  rightMotor.setSpeed(100);
+  leftMotor.run(RELEASE);
+  rightMotor.run(RELEASE);
 }
 
 void loop() {
+  Serial.println("Running now");
+  leftMotor.run(FORWARD);
+  rightMotor.run(FORWARD);
+  delay(3000);
+  leftMotor.run(RELEASE);
+  rightMotor.run(RELEASE);
+  delay(300);
+  leftMotor.run(BACKWARD);
+  rightMotor.run(BACKWARD);
+  delay(3000);
+  leftMotor.run(RELEASE);
+  rightMotor.run(RELEASE);
+  delay(10000);
 }
