@@ -42,7 +42,7 @@ void setup() {
 
 void loop() {
    
-  distance = sonar.ping_cm();
+  distance = sonar.ping_in();
   
   // Send results to Serial Monitor
   Serial.print("Distance = ");
@@ -51,7 +51,7 @@ void loop() {
   }
   else {
     Serial.print(distance);
-    Serial.println(" cm");
+    Serial.println(" in");
     delay(500);
   }
   delay(500);
