@@ -37,8 +37,19 @@
 
 // This uses Serial Monitor to display Range Finder distance readings
 
-// Include NewPing Library
+// Include NewPing Library for Ultrasonic Sensor
 #include <NewPing.h>
+
+// Use our custom motor library (https://github.com/jdalbeck/Adafruit-Motor-Shield-library)
+// to allow this to work on both Arduino and ESP32
+#include <AFMotor.h>
+
+// Include the math library for rounding
+#include <math.h>
+
+// Initialize left motor and right motor
+AF_DCMotor leftMotor(1);
+AF_DCMotor rightMotor(2);
 
 
 // Arduino Settings
@@ -62,21 +73,64 @@ float distance;
 
 void setup() {
   Serial.begin (SERIALBAUD);
+
+  // Motor setup
+  leftMotor.setSpeed(100);
+  leftMotor.run(RELEASE);
+  rightMotor.setSpeed(100);
+  rightMotor.run(RELEASE);
 }
 
 void loop() {
-   
+  int turnTime;
+  String turnDirection;
+
+  // Run both the motors forward for 3 seconds
+  leftMotor.run(FORWARD);
+  rightMotor.run(FORWARD);
+
+  // Get the distance to the closest object, in inches
   distance = sonar.ping_in();
   
-  // Send results to Serial Monitor
-  Serial.print("Distance = ");
-  if (distance >= 400 || distance <= 2) {
-    Serial.println("Out of range");
-  }
-  else {
+  // If there is an object between 2 and 5 inches away, do a random turn
+  if (distance <= 5 && distance >= 2) {
+
+    // Pause for 1 second
+    leftMotor.run(RELEASE);
+    rightMotor.run(RELEASE);
+    delay(1000);
+
+    // Pick a random turn direction (left or right)
+    if (random(0, 10) <5) {
+      turnDirection = "right";
+      leftMotor.run(FORWARD);
+      rightMotor.run(BACKWARD);
+    }
+    else {
+      turnDirection = "left";
+      leftMotor.run(BACKWARD);
+      rightMotor.run(FORWARD);
+    }
+
+    // Turn for a random amount of time between 1 and 4 seconds
+    turnTime = round(random(1000, 4000));
+    delay(turnTime);
+
+    // Pause for 1 second
+    leftMotor.run(RELEASE);
+    rightMotor.run(RELEASE);
+    delay(1000);
+
+    // Log the turn in the serial monitor
+    Serial.print("Object detected ");
     Serial.print(distance);
-    Serial.println(" in");
-    delay(500);
+    Serial.print(" inches away.  Turning ");
+    Serial.print(turnDirection);
+    Serial.print(" for ");
+    Serial.print(turnTime);
+    Serial.println(" milliseconds.");
   }
+
+  // Re-scan for objects ever 500ms
   delay(500);
 }
